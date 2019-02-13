@@ -2,11 +2,13 @@
   <div class="jumbotron">
     <div class="row">
       <div class="col-sm-6">
+        <!--Usando property binding - Encaminha uma propriedade chamada [progresso], que contem o valor do atributo
+        progresso da classe do componente progresso -->
         <app-progresso [progresso] = "progresso"></app-progresso>
       </div>
       <div class="col-sm-6">
           <div class="d-flex justify-content-end">
-            <app-tentativas></app-tentativas>
+            <app-tentativas [tentativas]="tentativas" ></app-tentativas>
           </div>
       </div>
     </div>
