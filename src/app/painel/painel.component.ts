@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { Frase } from '../shared/frase.model'
-import { FRASES } from './frases.mock'
+import { Component, OnInit, EventEmitter, Output, OnDestroy  } from '@angular/core';
+import { Frase } from '../shared/frase.model';
+import { FRASES } from './frases.mock';
+import { OutletContext } from '@angular/router';
  
 @Component({
   selector: 'app-painel',
   templateUrl: './painel.component.html',
   styleUrls: ['./painel.component.css']
 })
-export class PainelComponent implements OnInit {
+export class PainelComponent implements OnInit, OnDestroy {
 
   public frases: Frase[] = FRASES
   public instrucao: string = 'Traduza a frase'
@@ -17,13 +18,19 @@ export class PainelComponent implements OnInit {
   public progresso: number = 0
   public tentativas: number = 3
   
+  /*Criamos um atributo público, em seguida instanciamos ele ao evento EventEmitter e decoramos esse atributo
+  com @Output para que ele possa estar visivel para componentes pais */
+  @Output() public encerrarJogo: EventEmitter<string> = new EventEmitter() //Podemos fazer a emissão de um evento
+  
   constructor() { 
     this.atualizaRodada()
-    console.log(this.rodadaFrase)
    }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
+
+  ngOutput() {}
+
+  ngOnDestroy() {}
   
   public atualizaResposta(resposta: Event): void {
     this.resposta = (<HTMLInputElement>resposta.target).value
@@ -31,10 +38,15 @@ export class PainelComponent implements OnInit {
 
   public verificaResposta(): void {
     if(this.rodadaFrase.frasePtBr == this.resposta) {
-      alert('A tradução está correta')
       //Trocar pergunta da rodada
       this.rodada++
+      
       //Atualiza o objeto rodada frase
+      if(this.rodada === 4) {
+        alert('Concluiu as traduções com sucesso')
+        this.encerrarJogo.emit("vitoria")
+
+      }
       this.atualizaRodada()
       //Atualiza barra de progresso
       this.progresso = this.progresso + (100 / this.frases.length)
@@ -43,7 +55,7 @@ export class PainelComponent implements OnInit {
       this.tentativas--
 
       if(this.tentativas === -1) {
-        alert("Você perdeu as tentativas!")
+        this.encerrarJogo.emit("derrota")
       }
     }
     
